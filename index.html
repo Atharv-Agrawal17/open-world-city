@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <title>Metro City</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Three.js -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
+    ></script>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         LOADING SCREEN
+    ====================================================== -->
+
+    <div id="loadingScreen">
+
+        <div class="loadingBox">
+
+            <div class="logo">
+                METRO CITY
+            </div>
+
+            <div class="subtitle">
+                OPEN WORLD
+            </div>
+
+            <div class="loadingBar">
+                <div id="loadingProgress"></div>
+            </div>
+
+            <div id="loadingText">
+                Loading city...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN MENU
+    ====================================================== -->
+
+    <div id="mainMenu">
+
+        <div class="menuBackground"></div>
+
+        <div class="menuContent">
+
+            <h1>METRO CITY</h1>
+
+            <h2>OPEN WORLD</h2>
+
+            <p>
+                Explore the city.
+                Find missions.
+                Drive vehicles.
+                Build your reputation.
+            </p>
+
+            <button id="playButton">
+                PLAY
+            </button>
+
+            <button id="continueButton">
+                CONTINUE
+            </button>
+
+            <button id="settingsButton">
+                SETTINGS
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SETTINGS
+    ====================================================== -->
+
+    <div id="settingsMenu">
+
+        <div class="settingsBox">
+
+            <h2>SETTINGS</h2>
+
+            <label>
+                Graphics
+                <select id="graphicsQuality">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>
+                        Medium
+                    </option>
+                    <option value="high">
+                        High
+                    </option>
+                </select>
+            </label>
+
+            <label>
+                Sound
+                <input
+                    type="range"
+                    id="soundVolume"
+                    min="0"
+                    max="100"
+                    value="70"
+                >
+            </label>
+
+            <button id="closeSettings">
+                BACK
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         GAME
+    ====================================================== -->
+
+    <div id="game">
+
+        <div id="world"></div>
+
+
+        <!-- =================================================
+             HUD
+        ================================================== -->
+
+        <div id="hud">
+
+            <div class="hudLeft">
+
+                <div class="hudBox">
+
+                    <div class="playerName">
+                        PLAYER
+                    </div>
+
+                    <div class="healthOuter">
+                        <div
+                            id="healthBar"
+                            class="healthInner"
+                        ></div>
+                    </div>
+
+                </div>
+
+                <div class="hudBox">
+
+                    <div>
+                        CASH
+                    </div>
+
+                    <strong id="cash">
+                        $500
+                    </strong>
+
+                </div>
+
+                <div class="hudBox">
+
+                    <div>
+                        WANTED
+                    </div>
+
+                    <div
+                        id="wantedStars"
+                        class="wantedStars"
+                    >
+                        ☆☆☆☆☆
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 MISSION HUD
+            ============================================== -->
+
+            <div id="missionHUD">
+
+                <div
+                    id="missionTitle"
+                    class="missionTitle"
+                >
+                    NO MISSION
+                </div>
+
+                <div
+                    id="missionDescription"
+                    class="missionDescription"
+                >
+                    Explore the city.
+                </div>
+
+                <div
+                    id="missionReward"
+                    class="missionReward"
+                >
+                    Reward: $0
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 MINIMAP
+            ============================================== -->
+
+            <div id="mapContainer">
+
+                <canvas id="miniMap"></canvas>
+
+                <div class="mapPlayer"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             INTERACTION MESSAGE
+        ================================================== -->
+
+        <div id="interactionMessage">
+            Press E
+        </div>
+
+
+        <!-- =================================================
+             CENTER MESSAGE
+        ================================================== -->
+
+        <div id="gameMessage">
+            Welcome to Metro City.
+        </div>
+
+
+        <!-- =================================================
+             VEHICLE HUD
+        ================================================== -->
+
+        <div id="vehicleHUD">
+
+            <div class="vehicleName">
+                VEHICLE
+            </div>
+
+            <div class="vehicleSpeed">
+                <span id="speed">
+                    0
+                </span>
+                KM/H
+            </div>
+
+            <div class="vehicleHealthOuter">
+
+                <div
+                    id="vehicleHealth"
+                    class="vehicleHealthInner"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MOBILE CONTROLS
+        ================================================== -->
+
+        <div id="mobileControls">
+
+            <div id="movementControls">
+
+                <button
+                    class="mobileButton"
+                    id="moveUp"
+                >
+                    ▲
+                </button>
+
+                <button
+                    class="mobileButton"
+                    id="moveLeft"
+                >
+                    ◀
+                </button>
+
+                <button
+                    class="mobileButton"
+                    id="moveDown"
+                >
+                    ▼
+                </button>
+
+                <button
+                    class="mobileButton"
+                    id="moveRight"
+                >
+                    ▶
+                </button>
+
+            </div>
+
+
+            <div id="actionControls">
+
+                <button
+                    class="mobileButton actionButton"
+                    id="actionButton"
+                >
+                    E
+                </button>
+
+                <button
+                    class="mobileButton actionButton"
+                    id="runButton"
+                >
+                    RUN
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PAUSE MENU
+        ================================================== -->
+
+        <div id="pauseMenu">
+
+            <div class="pauseBox">
+
+                <h1>PAUSED</h1>
+
+                <button id="resumeButton">
+                    RESUME
+                </button>
+
+                <button id="pauseSettingsButton">
+                    SETTINGS
+                </button>
+
+                <button id="quitButton">
+                    MAIN MENU
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SCRIPTS
+    ====================================================== -->
+
+    <script>
+
+        /*
+         * Temporary game bootstrap.
+         *
+         * The complete game systems will be loaded from:
+         *
+         * js/main.js
+         * js/player.js
+         * js/vehicles.js
+         * js/city.js
+         * js/npcs.js
+         * js/police.js
+         * js/missions.js
+         * js/shops.js
+         * js/world.js
+         * js/save.js
+         *
+         * This keeps the project organised and makes it
+         * much easier to expand into a large open world.
+         */
+
+        window.GAME_CONFIG = {
+
+            title: "Metro City",
+
+            version: "0.1.0",
+
+            worldSize: 600,
+
+            playerHealth: 100,
+
+            startingCash: 500,
+
+            wantedLevels: 5,
+
+            maxVehicles: 30,
+
+            maxNPCs: 100,
+
+            dayLength: 600,
+
+            graphics: "medium",
+
+            mobileControls: true
+
+        };
+
+
+        /*
+         * Loading animation
+         */
+
+        let loading =
+            0;
+
+        const loadingProgress =
+            document.getElementById(
+                "loadingProgress"
+            );
+
+        const loadingText =
+            document.getElementById(
+                "loadingText"
+            );
+
+        const loadingTimer =
+            setInterval(
+                function() {
+
+                    loading += 4;
+
+                    if (
+                        loading > 100
+                    ) {
+
+                        loading = 100;
+
+                    }
+
+                    loadingProgress.style.width =
+                        loading + "%";
+
+
+                    if (
+                        loading < 30
+                    ) {
+
+                        loadingText.textContent =
+                            "Loading city...";
+
+                    }
+                    else if (
+                        loading < 60
+                    ) {
+
+                        loadingText.textContent =
+                            "Loading vehicles...";
+
+                    }
+                    else if (
+                        loading < 80
+                    ) {
+
+                        loadingText.textContent =
+                            "Loading characters...";
+
+                    }
+                    else {
+
+                        loadingText.textContent =
+                            "Preparing Metro City...";
+
+                    }
+
+
+                    if (
+                        loading >= 100
+                    ) {
+
+                        clearInterval(
+                            loadingTimer
+                        );
+
+                        setTimeout(
+                            function() {
+
+                                document
+                                    .getElementById(
+                                        "loadingScreen"
+                                    )
+                                    .style.display =
+                                    "none";
+
+                            },
+                            500
+                        );
+
+                    }
+
+                },
+                40
+            );
+
+
+        /*
+         * Menu
+         */
+
+        const mainMenu =
+            document.getElementById(
+                "mainMenu"
+            );
+
+        const settingsMenu =
+            document.getElementById(
+                "settingsMenu"
+            );
+
+        const game =
+            document.getElementById(
+                "game"
+            );
+
+
+        document
+            .getElementById(
+                "playButton"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    mainMenu.style.display =
+                        "none";
+
+                    game.classList.add(
+                        "active"
+                    );
+
+                    if (
+                        window.startMetroCity
+                    ) {
+
+                        window.startMetroCity();
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "continueButton"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    mainMenu.style.display =
+                        "none";
+
+                    game.classList.add(
+                        "active"
+                    );
+
+                    if (
+                        window.continueMetroCity
+                    ) {
+
+                        window.continueMetroCity();
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "settingsButton"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    settingsMenu.style.display =
+                        "flex";
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "closeSettings"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    settingsMenu.style.display =
+                        "none";
+
+                }
+            );
+
+
+        /*
+         * Pause
+         */
+
+        document
+            .getElementById(
+                "resumeButton"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    document
+                        .getElementById(
+                            "pauseMenu"
+                        )
+                        .style.display =
+                        "none";
+
+                    if (
+                        window.resumeMetroCity
+                    ) {
+
+                        window.resumeMetroCity();
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "pauseSettingsButton"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    settingsMenu.style.display =
+                        "flex";
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "quitButton"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    location.reload();
+
+                }
+            );
+
+
+        /*
+         * Keyboard pause
+         */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    const pause =
+                        document.getElementById(
+                            "pauseMenu"
+                        );
+
+                    if (
+                        pause.style.display ===
+                        "flex"
+                    ) {
+
+                        pause.style.display =
+                            "none";
+
+                        if (
+                            window.resumeMetroCity
+                        ) {
+
+                            window.resumeMetroCity();
+
+                        }
+
+                    }
+                    else {
+
+                        pause.style.display =
+                            "flex";
+
+                        if (
+                            window.pauseMetroCity
+                        ) {
+
+                            window.pauseMetroCity();
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Mobile button helper
+         */
+
+        function mobileHold(
+            id,
+            key
+        ) {
+
+            const button =
+                document.getElementById(
+                    id
+                );
+
+            button.addEventListener(
+                "pointerdown",
+                function(event) {
+
+                    event.preventDefault();
+
+                    window.dispatchEvent(
+                        new KeyboardEvent(
+                            "keydown",
+                            {
+                                key: key
+                            }
+                        )
+                    );
+
+                }
+            );
+
+            button.addEventListener(
+                "pointerup",
+                function(event) {
+
+                    event.preventDefault();
+
+                    window.dispatchEvent(
+                        new KeyboardEvent(
+                            "keyup",
+                            {
+                                key: key
+                            }
+                        )
+                    );
+
+                }
+            );
+
+            button.addEventListener(
+                "pointercancel",
+                function() {
+
+                    window.dispatchEvent(
+                        new KeyboardEvent(
+                            "keyup",
+                            {
+                                key: key
+                            }
+                        )
+                    );
+
+                }
+            );
+
+        }
+
+
+        mobileHold(
+            "moveUp",
+            "w"
+        );
+
+        mobileHold(
+            "moveDown",
+            "s"
+        );
+
+        mobileHold(
+            "moveLeft",
+            "a"
+        );
+
+        mobileHold(
+            "moveRight",
+            "d"
+        );
+
+
+        document
+            .getElementById(
+                "actionButton"
+            )
+            .addEventListener(
+                "pointerdown",
+                function() {
+
+                    window.dispatchEvent(
+                        new KeyboardEvent(
+                            "keydown",
+                            {
+                                key: "e"
+                            }
+                        )
+                    );
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "runButton"
+            )
+            .addEventListener(
+                "pointerdown",
+                function() {
+
+                    window.dispatchEvent(
+                        new KeyboardEvent(
+                            "keydown",
+                            {
+                                key: "Shift"
+                            }
+                        )
+                    );
+
+                }
+            );
+
+
+        /*
+         * Default HUD
+         */
+
+        document
+            .getElementById(
+                "healthBar"
+            )
+            .style.width =
+            "100%";
+
+
+        document
+            .getElementById(
+                "vehicleHealth"
+            )
+            .style.width =
+            "100%";
+
+    </script>
+
+
+    <!-- Game systems -->
+
+    <script src="js/main.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/vehicles.js"></script>
+    <script src="js/city.js"></script>
+    <script src="js/npcs.js"></script>
+    <script src="js/police.js"></script>
+    <script src="js/missions.js"></script>
+    <script src="js/shops.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/save.js"></script>
+
+</body>
+</html>
